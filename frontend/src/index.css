@@ -2,8 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  :root {
+    --primary-color: rgb(119, 32, 172);
+    --white-color: #fff;
+    --background-gradient: linear-gradient(
+      0deg,
+      rgba(119, 32, 172, 1) 24%,
+      rgba(152, 10, 238, 1) 51%
+    );
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 62.5%;
+    height: 100%;
+  }
+
+  body {
+    font-size: 1.6rem;
+    color: var(--white-color);
+    background: var(--primary-color);
+    background: var(--background-gradient);
+    background-repeat: no-repeat;
+  }
+
+  h1 {
+    background: linear-gradient(to right, #74c61f, #1fe119, #9bdf12, #06d609);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-weight: bold;
+  }
 }
