@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    command: "sh /scripts/dev.sh"
+    env_file:
+      - ./envs/dev.env
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - postgres
+    pull_policy: always
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./envs/dev.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
