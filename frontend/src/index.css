@@ -11,6 +11,16 @@
       rgba(119, 32, 172, 1) 24%,
       rgba(152, 10, 238, 1) 51%
     );
+    --header-gradient: linear-gradient(
+      to right,
+      #74c61f,
+      #1fe119,
+      #9bdf12,
+      #9bdf12,
+      #9bdf12,
+      #0317f4,
+      #0317f4
+    );
   }
 
   * {
@@ -33,7 +43,7 @@
   }
 
   h1 {
-    background: linear-gradient(to right, #74c61f, #1fe119, #9bdf12, #06d609);
+    background: var(--header-gradient);
     -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
     background-clip: text;

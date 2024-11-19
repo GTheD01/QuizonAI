@@ -1,8 +1,15 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 export default function MainPage() {
   const [quizTopic, setQuizTopic] = useState<string>("");
   const [inputError, setInputError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (quizTopic.length > 0) {
@@ -31,6 +38,7 @@ export default function MainPage() {
       </h3>
       <form className="w-full mt-3" onSubmit={startQuizHandler}>
         <input
+          ref={inputRef}
           onChange={(e) => setQuizTopic(e.target.value)}
           type="text"
           minLength={1}
