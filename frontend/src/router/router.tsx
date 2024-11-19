@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "../pages/Layout";
 import MainPage from "../pages/MainPage";
 import Question from "../pages/Question";
+import QuizResults from "../pages/QuizResults";
 
 const router = createBrowserRouter(
   [
@@ -16,6 +17,10 @@ const router = createBrowserRouter(
         {
           path: "question",
           element: <Question />,
+        },
+        {
+          path: "quiz-results",
+          element: <QuizResults />,
         },
       ],
     },
