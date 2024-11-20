@@ -43,10 +43,10 @@ export default function MainPage() {
       })
       .catch((error) => {
         console.error(error);
+        dispatch(setQuizTopic(""));
       })
       .finally(() => {
         setIsLoading(false);
-        dispatch(setQuizTopic(""));
         if (inputRef.current) {
           inputRef.current.value = "";
         }

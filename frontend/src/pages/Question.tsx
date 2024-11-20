@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Answer from "../components/Answer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { setUserAnswer } from "../redux/slices/quizSlice";
+import { shuffleArray } from "../lib/helpers";
 
 export default function Question() {
   const dispatch = useAppDispatch();
@@ -10,11 +11,21 @@ export default function Question() {
   const { id } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [shuffledAnswers, setShuffledAnswers] = useState<string[]>([]);
 
   const quizTopic = useAppSelector((store) => store.quiz.topic);
   const questions = useAppSelector((store) => store.quiz.questions);
   const question = questions[Number(id) - 1];
-  const answers = [...question?.incorrect_answers, question?.correct_answer];
+
+  useEffect(() => {
+    if (question) {
+      const originalArray = [
+        ...new Set([question?.correct_answer, ...question?.incorrect_answers]),
+      ];
+      const shuffled = shuffleArray(originalArray);
+      setShuffledAnswers(shuffled);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (selectedAnswer) {
@@ -38,6 +49,10 @@ export default function Question() {
     setSelectedAnswer(null);
   };
 
+  if (!question) {
+    return <Navigate to={"/"} replace />;
+  }
+
   return (
     <div className="flex items-center justify-center flex-col px-12">
       <h2 className="text-4xl mb-8">Quiz Topic: {quizTopic}</h2>
@@ -45,7 +60,7 @@ export default function Question() {
         <h3 className="text-4xl text-blue-500 font-bold">Question {id}</h3>
         <h5 className="text-3xl tracking-wide">{question?.question}</h5>
         <div className="space-y-2">
-          {answers?.map((answer, idx) => (
+          {shuffledAnswers?.map((answer, idx) => (
             <Answer
               key={idx}
               value={answer}

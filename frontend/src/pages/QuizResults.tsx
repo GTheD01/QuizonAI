@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Answer from "../components/Answer";
 import Pagination from "../components/Pagination";
 import { useAppSelector } from "../redux/hooks";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 export default function QuizResults() {
   const [selectedQuestion, setSelectedQuestion] = useState(1);
@@ -10,9 +10,18 @@ export default function QuizResults() {
   const userAnswers = useAppSelector((store) => store.quiz.userAnswers);
   const questions = useAppSelector((store) => store.quiz.questions);
   const question = questions[selectedQuestion - 1];
-  let answers: string[] = [];
-  if (question) {
-    answers = [...question.incorrect_answers, question.correct_answer];
+  const [answers, setAnswers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (question) {
+      setAnswers([
+        ...new Set([...question.incorrect_answers, question.correct_answer]),
+      ]);
+    }
+  }, [question]);
+
+  if (userAnswers.length < 1) {
+    return <Navigate to={"/"} replace />;
   }
 
   return (
@@ -26,7 +35,7 @@ export default function QuizResults() {
         <h3 className="text-4xl text-blue-500 font-bold">
           Question {selectedQuestion}
         </h3>
-        <h5 className="text-3xl tracking-wide">{question.question}</h5>
+        <h5 className="text-3xl tracking-wide">{question?.question}</h5>
         <div className="space-y-2">
           {answers?.map((answer) => (
             <Answer
