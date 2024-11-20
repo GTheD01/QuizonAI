@@ -53,6 +53,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # 
+    "quiz",
+
+    # 3rd party 
     "rest_framework",
     "drf_yasg",
     "corsheaders"
