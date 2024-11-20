@@ -25,7 +25,7 @@ export default function Answer({
   };
 
   const labelClasses = clsx(
-    "flex items-center space-x-2 cursor-pointer p-4 hover:opacity-90",
+    "flex space-x-2 cursor-pointer p-4 hover:opacity-90 text-start",
     {
       "bg-blue-300": selectedAnswer === value,
       "bg-green-300": correctAnswer === value,
