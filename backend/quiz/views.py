@@ -3,16 +3,16 @@ import os
 import openai
 from openai import OpenAI
 from rest_framework import status
-from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY", "")
 )
 
 
-class GenerateQuestionnaireView(GenericAPIView):
+class GenerateQuestionnaireView(APIView):
     permission_classes = [AllowAny,]
 
     def post(self, request, *args, **kwargs):
@@ -22,8 +22,9 @@ class GenerateQuestionnaireView(GenericAPIView):
             return Response({"error": "Topic is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         prompt = """
-            on the topic {topic} can you give me 10 questions but return me in json object in the following format,
-            make sure only the json object is inside nothing else, no extra text no quotes
+            On the topic {topic} can you give me 10 questions but return me in json object in the following format,
+            make sure only the json object is inside nothing else, no extra text no quotes, ensure that each question has unique incorrect answers, 
+            and the correct answer should not appear in the list of incorrect answers.
             {{
                 id: <incremental_int>,
                 question: <question_content>,
