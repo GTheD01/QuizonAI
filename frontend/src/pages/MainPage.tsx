@@ -1,8 +1,16 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { AxiosInstance } from "../lib/axios";
+import Spinner from "../components/Spinner";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setQuestions, setQuizTopic } from "../redux/slices/quizSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function MainPage() {
-  const [quizTopic, setQuizTopic] = useState<string>("");
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const quizTopic = useAppSelector((store) => store.quiz.topic);
   const [inputError, setInputError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -25,7 +33,24 @@ export default function MainPage() {
       return;
     }
 
-    console.log("Generate questions");
+    setIsLoading(true);
+    AxiosInstance.post("quiz/", {
+      topic: quizTopic,
+    })
+      .then((res) => {
+        dispatch(setQuestions(res.data.questions));
+        navigate("/question/1/");
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        dispatch(setQuizTopic(""));
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+      });
   };
   return (
     <>
@@ -33,13 +58,13 @@ export default function MainPage() {
         Choose the topic you'd like to take a quiz on, and let's see how much
         you know
         <span className="font-bold text-green-500">
-          (e.g., Sport, IT, Finances...)
+          (e.g., Sport, IT, Finance...)
         </span>
       </h3>
       <form className="w-full mt-3" onSubmit={startQuizHandler}>
         <input
           ref={inputRef}
-          onChange={(e) => setQuizTopic(e.target.value)}
+          onChange={(e) => dispatch(setQuizTopic(e.target.value))}
           type="text"
           minLength={1}
           maxLength={30}
@@ -50,10 +75,11 @@ export default function MainPage() {
         />
         {inputError && <p className="text-red-500">{inputError}</p>}
         <button
+          disabled={isLoading}
           type="submit"
-          className="w-full py-4 shadow-md hover:bg-black/10 rounded-b-md"
+          className="w-full py-4 shadow-md hover:bg-black/10 rounded-b-md flex justify-center"
         >
-          Proceed
+          {isLoading ? <Spinner /> : "Proceed"}
         </button>
       </form>
     </>

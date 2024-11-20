@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
 import Answer from "../components/Answer";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useNavigate, useParams } from "react-router-dom";
+import { setUserAnswer } from "../redux/slices/quizSlice";
 
 export default function Question() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const quizTopic = useAppSelector((store) => store.quiz.topic);
+  const questions = useAppSelector((store) => store.quiz.questions);
+  const question = questions[Number(id) - 1];
+  const answers = [...question?.incorrect_answers, question?.correct_answer];
 
   useEffect(() => {
     if (selectedAnswer) {
@@ -14,46 +25,36 @@ export default function Question() {
   const nextQuestionHandler = () => {
     if (!selectedAnswer) {
       setError("You must select at least one answer");
+      return;
     }
+    dispatch(
+      setUserAnswer({ answer: selectedAnswer, questionIdx: Number(id) - 1 })
+    );
+    if (Number(id) + 1 > 10) {
+      navigate("/quiz-results");
+    } else {
+      navigate(`/question/${Number(id) + 1}`);
+    }
+    setSelectedAnswer(null);
   };
 
   return (
     <div className="flex items-center justify-center flex-col px-12">
-      <h2 className="text-4xl mb-8">Quiz Topic:</h2>
+      <h2 className="text-4xl mb-8">Quiz Topic: {quizTopic}</h2>
       <div className="px-20 py-12 shadow-2xl space-y-6 max-w-[768px] min-w-[330px]">
-        <h3 className="text-4xl text-blue-500 font-bold">Question 1</h3>
-        <h5 className="text-3xl tracking-wide">
-          Which of the following is OOP language?
-        </h5>
+        <h3 className="text-4xl text-blue-500 font-bold">Question {id}</h3>
+        <h5 className="text-3xl tracking-wide">{question?.question}</h5>
         <div className="space-y-2">
-          <Answer
-            value="Java"
-            id="Java"
-            name="answer"
-            selectedAnswer={selectedAnswer}
-            setSelectedAnswer={setSelectedAnswer}
-          />
-          <Answer
-            value="Cobol"
-            id="Cobol"
-            name="answer"
-            selectedAnswer={selectedAnswer}
-            setSelectedAnswer={setSelectedAnswer}
-          />
-          <Answer
-            value="C"
-            id="C"
-            name="answer"
-            selectedAnswer={selectedAnswer}
-            setSelectedAnswer={setSelectedAnswer}
-          />
-          <Answer
-            value="Assembly"
-            id="Assembly"
-            name="answer"
-            selectedAnswer={selectedAnswer}
-            setSelectedAnswer={setSelectedAnswer}
-          />
+          {answers?.map((answer, idx) => (
+            <Answer
+              key={idx}
+              value={answer}
+              id={answer}
+              name="answer"
+              selectedAnswer={selectedAnswer}
+              setSelectedAnswer={setSelectedAnswer}
+            />
+          ))}
         </div>
         {error && <p className="text-red-500">{error}</p>}
         <button
