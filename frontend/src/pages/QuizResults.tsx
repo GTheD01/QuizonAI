@@ -3,6 +3,9 @@ import Answer from "../components/Answer";
 import Pagination from "../components/Pagination";
 import { useAppSelector } from "../redux/hooks";
 import { Link, Navigate } from "react-router-dom";
+import { AxiosInstance } from "../lib/axios";
+import Spinner from "../components/Spinner";
+import MoreInformationsModal from "../components/MoreInformationsModal";
 
 export default function QuizResults() {
   const [selectedQuestion, setSelectedQuestion] = useState(1);
@@ -10,6 +13,10 @@ export default function QuizResults() {
   const userAnswers = useAppSelector((store) => store.quiz.userAnswers);
   const questions = useAppSelector((store) => store.quiz.questions);
   const question = questions[selectedQuestion - 1];
+  const [moreInformations, setMoreInformations] = useState<string>("");
+  const [moreInformationsModalIsOpen, setMoreInformationsModalIsOpen] =
+    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [answers, setAnswers] = useState<string[]>([]);
 
   useEffect(() => {
@@ -23,6 +30,25 @@ export default function QuizResults() {
   if (userAnswers.length < 1) {
     return <Navigate to={"/"} replace />;
   }
+
+  const generateMoreInformationsHandler = () => {
+    setIsLoading(true);
+    AxiosInstance.post("/quiz/generate-more-info/", { topic: quizTopic })
+      .then((res) => {
+        setMoreInformations(res.data.message);
+        setMoreInformationsModalIsOpen(true);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const closeMoreInformationsModal = () => {
+    setMoreInformationsModalIsOpen(false);
+  };
 
   return (
     <div className="flex items-center justify-center flex-col px-12">
@@ -52,6 +78,21 @@ export default function QuizResults() {
       <Link className="bg-blue-400 p-4 hover:bg-blue-500" to={"/"}>
         Play Again
       </Link>
+      <h3 className="text-3xl mt-12">Wanna learn more about {quizTopic}?</h3>
+      <button
+        disabled={isLoading}
+        className="bg-yellow-300 p-4 text-[var(--primary-color)] mt-8 disabled:pointer-events-none disabled:opacity-70"
+        onClick={generateMoreInformationsHandler}
+      >
+        {isLoading ? <Spinner /> : "Generate more informations"}
+      </button>
+      {moreInformationsModalIsOpen && (
+        <MoreInformationsModal
+          quizTopic={quizTopic}
+          content={moreInformations}
+          closeMoreInformationsModal={closeMoreInformationsModal}
+        />
+      )}
     </div>
   );
 }
