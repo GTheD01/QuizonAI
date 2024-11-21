@@ -52,3 +52,37 @@ class GenerateQuestionnaireView(APIView):
             return Response({"error": f"OpenAI API error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GenerateMoreInformationsAboutTopicView(APIView):
+    permission_classes = [AllowAny,]
+    
+    def post(self, request, *args, **kwargs):
+        topic = self.request.data["topic"]
+
+        if not topic:
+            return Response({"error": "Topic is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        prompt = """
+            Give a comprehensive overview of {topic}, highlighting key figures, events, and the impact it has on society.
+            Make it short and intersting to beginners, no more than 1000 chars.
+        """.format(topic=topic)
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
+
+            response_text = response.choices[0].message.content
+
+            return Response({"message": response_text}, status=status.HTTP_200_OK)
+        except openai.OpenAIError as e:
+            return Response({"error": f"OpenAI API error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
