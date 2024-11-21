@@ -81,7 +81,7 @@ export default function QuizResults() {
       <h3 className="text-3xl mt-12">Wanna learn more about {quizTopic}?</h3>
       <button
         disabled={isLoading}
-        className="bg-yellow-300 p-4 text-[var(--primary-color)] mt-8 disabled:pointer-events-none disabled:opacity-70"
+        className="bg-yellow-300 p-4 text-[var(--primary-color)] mt-8 disabled:pointer-events-none disabled:opacity-80 hover:bg-yellow-400"
         onClick={generateMoreInformationsHandler}
       >
         {isLoading ? <Spinner /> : "Generate more informations"}

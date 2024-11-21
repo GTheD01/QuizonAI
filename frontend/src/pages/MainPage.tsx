@@ -77,7 +77,7 @@ export default function MainPage() {
         <button
           disabled={isLoading}
           type="submit"
-          className="w-full py-4 shadow-md hover:bg-black/10 rounded-b-md flex justify-center"
+          className="w-full py-4 shadow-md hover:bg-black/10 rounded-b-md flex justify-center disabled:opacity-80 disabled:pointer-events-none"
         >
           {isLoading ? <Spinner /> : "Proceed"}
         </button>
